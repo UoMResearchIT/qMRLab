@@ -200,17 +200,18 @@ jobs:
           command: |
             startup;
             qMRLabVer;
-            qmrlabRoot = getenv('GITHUB_WORKSPACE');
-            testDir = '/Test/Common';
-            res1 = moxunit_runtests([qmrlabRoot testDir],'-recursive','-with_coverage','-cover',[qmrlabRoot '/src'],'-cover_exclude','*GUI*','-cover_json_file',[qmrlabRoot testDir '/coverage_common.json']);
-            exit(~res1);
+            testDir = 'Test/Common';
+            [testResults, coverageResults] = runtests(testDir, 'ReportCoverageFor', 'src', 'IncludeSubfolders', true);
+            coverageResults.generateCoberturaReport('Test/Common/coverage_common.xml');
+            exit(~all([testResults.assertSuccess().Passed]));
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: ${{ github.workspace }}/Test/Common/coverage_common.json
+          files: ${{ github.workspace }}/Test/Common/coverage_common.xml
           flags: matlab
           fail_ci_if_error: false
+
   MATLAB_7_ModelsTests:
     runs-on: ubuntu-latest
     steps:
