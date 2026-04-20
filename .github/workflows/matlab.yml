@@ -23,7 +23,7 @@ jobs:
             report: Test/MoxUnitCompatible/quickMoxTests/coverage_quickMoxTests.json
 
           - name: BatchExamplePart1
-            tests: Test/MoxUnitCompatible/quickMoxTests/BatchExample_test.m
+            tests: Test/MoxUnitCompatible/BatchExample_test.m
             report: Test/MoxUnitCompatible/coverage_BatchExample_test.json
 
           - name: BatchExamplePart2
