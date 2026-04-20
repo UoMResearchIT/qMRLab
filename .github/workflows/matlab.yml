@@ -112,6 +112,7 @@ jobs:
           files: ${{ github.workspace }}/Test/MoxUnitCompatible/simTests/coverage_simTests.json
           flags: matlab
           fail_ci_if_error: false
+
   MATLAB_4_OtherTests:
     runs-on: ubuntu-latest
     steps:
@@ -145,6 +146,7 @@ jobs:
           files: ${{ github.workspace }}/Test/MoxUnitCompatible/other/coverage_other.json
           flags: matlab
           fail_ci_if_error: false
+
   MATLAB_5_EquationTests:
     runs-on: ubuntu-latest
     steps:
@@ -178,6 +180,7 @@ jobs:
           files: ${{ github.workspace }}/Test/MoxUnitCompatible/equation_test/coverage_equation.json
           flags: matlab
           fail_ci_if_error: false
+
   MATLAB_6_CommonTests:
     runs-on: ubuntu-latest
     steps:
@@ -199,11 +202,8 @@ jobs:
         with:
           command: |
             startup;
-            qMRLabVer;
-            testDir = 'Test/Common';
-            [testResults, coverageResults] = runtests(testDir, 'ReportCoverageFor', 'src', 'IncludeSubfolders', true);
-            coverageResults.generateCoberturaReport('Test/Common/coverage_common.xml');
-            exit(~all([testResults.assertSuccess().Passed]));
+            allPassed = runTestFolder('Common', report = 'Test/Common/coverage_common.xml');
+            exit(~allPassed);
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -233,18 +233,16 @@ jobs:
         with:
           command: |
             startup;
-            qMRLabVer;
-            qmrlabRoot = getenv('GITHUB_WORKSPACE');
-            testDir = '/Test/Models';
-            res1 = moxunit_runtests([qmrlabRoot testDir],'-recursive','-with_coverage','-cover',[qmrlabRoot '/src'],'-cover_exclude','*GUI*','-cover_json_file',[qmrlabRoot testDir '/coverage_models.json']);
-            exit(~res1);
+            allPassed = runTestFolder('Models', report = 'Test/Models/coverage_models.xml');
+            exit(~allPassed);
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: ${{ github.workspace }}/Test/Models/coverage_models.json
+          files: ${{ github.workspace }}/Test/Models/coverage_models.xml
           flags: matlab
           fail_ci_if_error: false
+
   MATLAB_8_ModelsFunctionsTests:
     runs-on: ubuntu-latest
     steps:
@@ -266,15 +264,12 @@ jobs:
         with:
           command: |
             startup;
-            qMRLabVer;
-            qmrlabRoot = getenv('GITHUB_WORKSPACE');
-            testDir = '/Test/Models_Functions';
-            res1 = moxunit_runtests([qmrlabRoot testDir],'-recursive','-with_coverage','-cover',[qmrlabRoot '/src'],'-cover_exclude','*GUI*','-cover_json_file',[qmrlabRoot testDir '/coverage_models_functions.json']);
-            exit(~res1);
+            allPassed = runTestFolder('Models_Functions', report = 'Test/Models_Functions/coverage_models_functions.xml');
+            exit(~allPassed);
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: ${{ github.workspace }}/Test/Models_Functions/coverage_models_functions.json
+          files: ${{ github.workspace }}/Test/Models_Functions/coverage_models_functions.xml
           flags: matlab
           fail_ci_if_error: false
