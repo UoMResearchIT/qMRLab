@@ -9,13 +9,23 @@ classdef (TestTags = {'T1', 'Demo', 'Integration'}) fitT1_IR_Test < matlab.unitt
     
     methods (TestClassSetup) % Usually used to setup common testing variables, or loading data.
         function load_test_data(testCase)
-            testData = load('Data/IR_demo/IR_demo.mat'); % Place full relative path, in case the file goes missing or there is a conflict
+
+            here = pwd;
+            goBack = onCleanup(@() cd(here));
+
+            Model = inversion_recovery();
+            baseDir = tempdir();
+            demoDir = fullfile(baseDir, [Model.ModelName '_demo']);
+
+            if ~isfolder(demoDir)
+                downloadData(Model, tempdir());
+            end
+            cd(demoDir);
             
             % Set class properties
-            testCase.IRdata = testData.IRdata;
-            testCase.Mask = testData.Mask;
-            testCase.TI = testData.TI;
-
+            testCase.IRdata = load('inversion_recovery_data/IRdata.mat').IRData;
+            testCase.Mask = load('inversion_recovery_data/Mask.mat').Mask;
+            testCase.TI = load('FitResults/FitResults.mat').Protocol.IRData.Mat;
         end
     end
     
@@ -25,31 +35,14 @@ classdef (TestTags = {'T1', 'Demo', 'Integration'}) fitT1_IR_Test < matlab.unitt
     methods (Test) % Each test is it's own method function, and takes testCase as an argument.
 
         function test_IRfun_returns_near_expected_median_of_test_data(testCase) % Use very descriptive test method names
-            %% Prepare for test
-            %
+            
             method='Magnitude';
             
-            T1 = zeros(size(testCase.IRdata,1), size(testCase.IRdata,2));
-            
-            %% Fit voxels
-            %
-            for xx = 1:size(testCase.IRdata,1)
-                for yy = 1:size(testCase.IRdata,2)
-                    
-                    if testCase.Mask(xx,yy) % Skip masked voxels
-                        [T1(xx, yy), ~, ~, ~] = fitT1_IR(testCase.IRdata(xx, yy, :), testCase.TI, method);
-                    end
-                    
-                end
-            end
+            %% Fit (masked) voxels
+            [xx, yy] = find(testCase.Mask);
+            [maskedT1, ~, ~, ~] = arrayfun(@(x, y) fitT1_IR(testCase.IRdata(x, y, :), testCase.TI, method), xx, yy);
             
             %% Check the fit
-            %
-                        
-            % Mask data
-            maskedT1 = T1(:).*testCase.Mask(:);
-            maskedT1(maskedT1 == 0) =[];
-            
             expectedMedian = 748; % in s, Value was identified under stable working conditions.
             actualMedian = median(maskedT1(:));
             
