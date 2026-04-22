@@ -12,7 +12,7 @@ env:
 
 jobs:
   moxunit_tests:
-    name: MoxUnit - ${{ matrix.name }}
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -22,23 +22,23 @@ jobs:
             tests: Test/MoxUnitCompatible/quickMoxTests
             report: Test/MoxUnitCompatible/quickMoxTests/coverage_quickMoxTests.json
 
-          - name: BatchExamplePart1
+          - name: MATLAB_1_quickMox_BatchExamplePart1
             tests: Test/MoxUnitCompatible/BatchExample_test.m
             report: Test/MoxUnitCompatible/coverage_BatchExample_test.json
 
-          - name: BatchExamplePart2
+          - name: MATLAB_2_BatchExamplePart2
             tests: Test/MoxUnitCompatible/BatchExamplePart2
             report: Test/MoxUnitCompatible/BatchExamplePart2/coverage_BatchExamplePart2.json
 
-          - name: simTests
+          - name: MATLAB_3_SimTests
             tests: Test/MoxUnitCompatible/simTests
             report: Test/MoxUnitCompatible/simTests/coverage_simTests.json
 
-          - name: other
+          - name: MATLAB_4_OtherTests
             tests: Test/MoxUnitCompatible/other
             report: Test/MoxUnitCompatible/other/coverage_other.json
 
-          - name: equation
+          - name: MATLAB_5_EquationTests
             tests: Test/MoxUnitCompatible/equation_test
             report: Test/MoxUnitCompatible/equation_test/coverage_equation.json
 
@@ -71,19 +71,19 @@ jobs:
 
 
   matlab_tests:
-    name: MATLAB - ${{ matrix.name }}
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: Common
+          - name: MATLAB_6_CommonTests
             tests: Test/Common
             report: Test/Common/coverage_common.xml
-          - name: Models
+          - name: MATLAB_7_ModelsTests
             tests: Test/Models
             report: Test/Models/coverage_models.xml
-          - name: Models_Functions
+          - name: MATLAB_8_ModelsFunctionsTests
             tests: Test/Models_Functions
             report: Test/Models_Functions/coverage_models_functions.xml
 
